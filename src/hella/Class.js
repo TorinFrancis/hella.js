@@ -28,54 +28,6 @@ define([
 		},
 
 
-		getMethods: function () {
-			var methods = { };
-
-			_.forIn(this.__prototype__, function (value, key) {
-				if (key.charAt(0) !== '_' && _.isFunction(value)) {
-					methods[key] = value;
-				}
-			});
-
-			return methods;
-		},
-
-
-		getDeclaredMethods: function () {
-			var methods = { };
-
-			_.forOwn(this.__members__, function (value, key) {
-				if (_.isFunction(value)) {
-					methods[key] = value;
-				}
-			});
-
-			return methods;
-		},
-
-
-		lookup: function (name) {
-			var membersByNameCache = this.__membersByNameCache__ || (this.__membersByNameCache__ = { });
-			var members = membersByNameCache[name];
-
-			if (!members) {
-				members = [];
-
-				_.each(this.getTypes(), function (type) {
-					var typeMembers = type.__members__;
-
-					if (_.has(typeMembers, name)) {
-						members.push(typeMembers[name]);
-					}
-				});
-
-				membersByNameCache[name] = members;
-			}
-
-			return members.slice();
-		},
-
-
 		define: function (obj) {
 			this.__define__(obj);
 			this.__resolve__();
