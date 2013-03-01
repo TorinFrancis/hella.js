@@ -9,11 +9,16 @@ define([
 	/**
 	 * @author Torin Francis
 	 * @class hella.Class
+	 * @extends hella.Object
 	 *
 	 * Handles class creation.
 	 */
 	return new ClassImpl('hella.Class', HellaObject, ClassImpl.prototype, {
 
+		/**
+		 * Create a new instance of this Class.
+		 * @return {*}
+		 */
 		create: function () {
 			var instance = HellaObjectImpl.create(this.__prototype__);
 

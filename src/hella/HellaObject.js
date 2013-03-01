@@ -72,9 +72,9 @@ define([
 		 * - For any non-null reference value `x`, `x.equals(null)` should return `false`.
 		 *
 		 *
-		 * The `equals` method for class {@link hella.HellaObject} implements the most discriminating possible
-		 * equivalence relation on objects; that is, for any non-null reference values `x` and `y`, this method returns
-		 * `true` if and only if `x` and `y` refer to the same object (`x === y` has the value true).
+		 * The `equals` method for class `HellaObject` implements the most discriminating possible equivalence relation
+		 * on objects; that is, for any non-null reference values `x` and `y`, this method returns `true` if and only if
+		 * `x` and `y` refer to the same object (`x === y` has the value true).
 		 *
 		 * Note that it is generally necessary to override the {@link #hash} method whenever this method is overridden,
 		 * so as to maintain the general contract for the {@link #hash} method, which states that equal objects must
@@ -108,8 +108,8 @@ define([
 		 *   performance of hash tables.
 		 *
 		 *
-		 * As much as is reasonably practical, the hashCode method defined by class {@link hella.HellaObject} does
-		 * return distinct integers for distinct objects.
+		 * As much as is reasonably practical, the hashCode method defined by class `HellaObject` does return distinct
+		 * integers for distinct objects.
 		 *
 		 * @return {Number} a hash code value for this object.
 		 */
