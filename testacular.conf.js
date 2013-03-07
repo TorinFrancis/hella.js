@@ -8,30 +8,31 @@ basePath = '';
 
 // list of files / patterns to load in the browser
 files = [
-  MOCHA,
-  MOCHA_ADAPTER,
-  REQUIRE,
-  REQUIRE_ADAPTER,
+	MOCHA,
+	MOCHA_ADAPTER,
+	REQUIRE,
+	REQUIRE_ADAPTER,
 
-  // libs required for test framework
-  {pattern: 'node_modules/chai/chai.js', included: false},
+	// libs required for test framework
+	{pattern: 'node_modules/chai/chai.js', included: false},
 
-  // put all libs in requirejs 'paths' config here (included: false)
-  {pattern: 'lib/lodash.js', included: false},
+	// put all libs in requirejs 'paths' config here (included: false)
+	{pattern: 'lib/lodash.js', included: false},
 
-  // all src and test modules (included: false)
-  {pattern: 'src/hella/*.js', included: false},
-  {pattern: 'src/hella/internal/*.js', included: false},
-  {pattern: 'test/spec/hella/*.js', included: false},
+	// all src and test modules (included: false)
+	{pattern: 'src/hella/*.js', included: false},
+	{pattern: 'src/hella/internal/*.js', included: false},
+	{pattern: 'test/spec/hella/*.js', included: false},
+	{pattern: 'test/spec/hella/shared/*.js', included: false},
 
-  // test main require module last
-  'test/runner.js'
+	// test main require module last
+	'test/runner.js'
 ];
 
 
 // list of files to exclude
 exclude = [
-  
+
 ];
 
 

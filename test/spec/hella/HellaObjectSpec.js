@@ -152,7 +152,7 @@ define([
 						this._name = name;
 					},
 					getName: function() {
-						return this._name
+						return this._name;
 					},
 					otherMethod: function() {
 						return 'woop';
@@ -218,7 +218,7 @@ define([
 
 					Person.define({
 						getName: function() {
-							return 'NOT TORIN!'
+							return 'NOT TORIN!';
 						}
 					});
 				});
@@ -243,7 +243,7 @@ define([
 			beforeEach(function() {
 				Parent = Class.create({
 					method: function(thing, stuff) {
-						return thing + ', ' + stuff
+						return thing + ', ' + stuff;
 					}
 				});
 			});
@@ -254,17 +254,17 @@ define([
 				beforeEach(function() {
 					Child = Class.create(Parent, {
 						method: function() {
-							return this.name + ': ' + this.__super__()
+							return this.name + ': ' + this.__super__();
 						}
 					});
 
 					obj = {
 						name: 'user'
-					}
+					};
 				});
 
 				it('uses the inheritance chain of the applied method', function() {
-					expect(Child.getMethods().method.call(obj, 'foo', 'bar')).to.equal('user: foo, bar');
+					expect(Child.create().method.call(obj, 'foo', 'bar')).to.equal('user: foo, bar');
 				});
 			});
 

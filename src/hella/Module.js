@@ -1,13 +1,27 @@
 define([
 	'lodash',
 	'./internal/ClassImpl',
-	'./internal/ModuleImpl',
+	'./internal/ModuleConstructor',
+	'./internal/DefinableType',
 	'./HellaObject',
 	'./Class'
-], function (_, ClassImpl, ModuleImpl, HellaObject) {
+], function (_, ClassImpl, ModuleConstructor, DefinableType, HellaObject) {
 	'use strict';
 
-	return new ClassImpl('hella.Module', HellaObject, ModuleImpl.prototype, {
+	_.extend(ModuleConstructor.prototype, DefinableType);
+
+
+	return (new ClassImpl()).initialize('hella.Module', HellaObject, ModuleConstructor, ModuleConstructor.prototype, {
+
+		initialize: function (name, definition) {
+			this.__modules__ = [ ];
+			this.__members__ = { };
+
+			this.displayName = name;
+
+			this.__define__(definition);
+		},
+
 
 		toString: function () {
 			return 'module ' + this.displayName;
@@ -22,7 +36,7 @@ define([
 					name = 'AnonymousModule';
 				}
 
-				return new ModuleImpl(name, definition);
+				return ClassImpl.prototype.create.call(this, name, definition);
 			}
 
 		}

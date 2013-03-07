@@ -1,33 +1,16 @@
 define([
 	'lodash',
-	'./HellaObjectImpl'
-], function (_, HellaObjectImpl) {
+	'./ModuleConstructor'
+], function (_, ModuleConstructor) {
 	'use strict';
 
-	return _.extend(new HellaObjectImpl(), {
+	return {
 
 		getTypes: function () {
 			var types = this.__typesCache__;
-			var modules;
-			var parent;
 
 			if (!types) {
-				if (parent = this.__superclass__) {
-					types = parent.getTypes();
-				}
-				else {
-					types = [];
-				}
-
-				modules = this.__modules__;
-
-				for (var i = modules.length - 1; i >= 0; i--) {
-					types.push(modules[i]);
-				}
-
-				types.push(this);
-
-				this.__typesCache__ = types;
+				this.__typesCache__ = types = this.__getTypes__();
 			}
 
 			return types.slice();
@@ -35,18 +18,21 @@ define([
 
 
 		hasType: function (classOrModule) {
-			return classOrModule === this || _.indexOf(this.getTypes(), classOrModule) !== -1;
+			return classOrModule === this || _.contains(this.getTypes(), classOrModule);
 		},
 
 
 		getMethods: function () {
 			var methods = { };
 
-			_.forIn(this.__prototype__, function (value, key) {
-				if (key.charAt(0) !== '_' && _.isFunction(value)) {
-					methods[key] = value;
-				}
+			_.each(this.getTypes(), function (type) {
+				_.forIn(type.__members__, function (value, key) {
+					if (key.charAt(0) !== '_' && _.isFunction(value)) {
+						methods[key] = value;
+					}
+				});
 			});
+
 
 			return methods;
 		},
@@ -87,36 +73,65 @@ define([
 		},
 
 
-		__define__: function (definition) {
-			this.__unresolvedMembers__ || (this.__unresolvedMembers__ = { });
+		__getTypes__: function () {
+			var modules = this.__modules__;
+			var parent = this.__superclass__;
+			var types = parent ? parent.getTypes() : [ ];
 
-			_.forOwn(definition, this.__defineIterator__, this);
+			for (var i = modules.length - 1; i >= 0; i--) {
+				types.push(modules[i]);
+			}
+
+			types.push(this);
+
+			return types;
 		},
 
 
-		__defineIterator__: function (value, key) {
-			switch (key) {
-				case 'includes':
-					this.__include__(value);
+		__define__: function (definition) {
+			var members = this.__members__;
+			var unresolvedMembers = this.__unresolvedMembers__ || (this.__unresolvedMembers__ = { });
 
-					break;
-				case 'statics':
-					_.forOwn(value, function (staticValue, staticKey) {
-						this[staticKey] = staticValue;
-					}, this);
+			_.forOwn(definition, function (value, key) {
+				switch (key) {
+					case 'includes':
+						this.__include__(value);
 
-					break;
-				default:
-					this.__members__[key] = this.__unresolvedMembers__[key] = value;
+						break;
+					case 'statics':
+						_.forOwn(value, function (staticValue, staticKey) {
+							this[staticKey] = staticValue;
+						}, this);
 
-					if (typeof value === 'function') {
-						value.displayName = this.displayName + '.' + key + '()';
-					}
+						break;
+					default:
+						members[key] = unresolvedMembers[key] = value;
 
-					break;
-			}
+						if (_.isFunction(value)) {
+							value.displayName = this.displayName + '.' + key + '()';
+						}
+
+						break;
+				}
+			}, this);
+		},
+
+
+		__include__: function (modules) {
+			var selfModules = this.__modules__;
+			var unresolvedModules = this.__unresolvedModules__ || (this.__unresolvedModules__ = [ ]);
+
+			_.each([].concat(modules), function (module) {
+				if (module instanceof ModuleConstructor && !_.contains(this.__getTypes__(), module)) {
+					_.each(module.__modules__, this.__include__, this);
+
+					selfModules.unshift(module);
+
+					unresolvedModules.push(module);
+				}
+			}, this);
 		}
 
-	});
+	};
 
 });

@@ -1,19 +1,22 @@
 define([
 	'lodash',
-	'./internal/HellaObjectImpl',
+	'./internal/HellaObjectConstructor',
 	'./internal/ClassImpl'
-], function (_, HellaObjectImpl, ClassImpl) {
+], function (_, HellaObjectConstructor, ClassImpl) {
 	'use strict';
 
 	var __nextID__ = 0;
-	
+
 	/**
 	 * @author Torin Francis
 	 * @class hella.Object
 	 *
 	 * The root of all classes created with {@link hella.Class#create}. Defines methods shared by all objects.
 	 */
-	return new ClassImpl('hella.Object', null, HellaObjectImpl.prototype, {
+	return (new ClassImpl()).initialize('hella.Object', null, HellaObjectConstructor, HellaObjectConstructor.prototype, {
+
+		initialize: function () {},
+
 
 		getBoundMethod: function (name) {
 			var method = this[name];
@@ -72,9 +75,9 @@ define([
 		 * - For any non-null reference value `x`, `x.equals(null)` should return `false`.
 		 *
 		 *
-		 * The `equals` method for class {@link hella.HellaObject} implements the most discriminating possible
-		 * equivalence relation on objects; that is, for any non-null reference values `x` and `y`, this method returns
-		 * `true` if and only if `x` and `y` refer to the same object (`x === y` has the value true).
+		 * The `equals` method for class `HellaObject` implements the most discriminating possible equivalence relation
+		 * on objects; that is, for any non-null reference values `x` and `y`, this method returns `true` if and only if
+		 * `x` and `y` refer to the same object (`x === y` has the value true).
 		 *
 		 * Note that it is generally necessary to override the {@link #hash} method whenever this method is overridden,
 		 * so as to maintain the general contract for the {@link #hash} method, which states that equal objects must
@@ -108,8 +111,8 @@ define([
 		 *   performance of hash tables.
 		 *
 		 *
-		 * As much as is reasonably practical, the hashCode method defined by class {@link hella.HellaObject} does
-		 * return distinct integers for distinct objects.
+		 * As much as is reasonably practical, the hashCode method defined by class `HellaObject` does return distinct
+		 * integers for distinct objects.
 		 *
 		 * @return {Number} a hash code value for this object.
 		 */
@@ -148,15 +151,6 @@ define([
 		 */
 		toString: function () {
 			return this.getClass().displayName + '@' + this.hash().toString(16);
-		},
-
-
-		statics: {
-
-			create: function () {
-				return new HellaObjectImpl();
-			}
-
 		}
 
 	});
