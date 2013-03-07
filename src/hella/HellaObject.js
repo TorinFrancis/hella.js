@@ -1,19 +1,22 @@
 define([
 	'lodash',
-	'./internal/HellaObjectImpl',
+	'./internal/HellaObjectConstructor',
 	'./internal/ClassImpl'
-], function (_, HellaObjectImpl, ClassImpl) {
+], function (_, HellaObjectConstructor, ClassImpl) {
 	'use strict';
 
 	var __nextID__ = 0;
-	
+
 	/**
 	 * @author Torin Francis
 	 * @class hella.Object
 	 *
 	 * The root of all classes created with {@link hella.Class#create}. Defines methods shared by all objects.
 	 */
-	return new ClassImpl('hella.Object', null, HellaObjectImpl.prototype, {
+	return (new ClassImpl()).initialize('hella.Object', null, HellaObjectConstructor, HellaObjectConstructor.prototype, {
+
+		initialize: function () {},
+
 
 		getBoundMethod: function (name) {
 			var method = this[name];
@@ -148,15 +151,6 @@ define([
 		 */
 		toString: function () {
 			return this.getClass().displayName + '@' + this.hash().toString(16);
-		},
-
-
-		statics: {
-
-			create: function () {
-				return new HellaObjectImpl();
-			}
-
 		}
 
 	});

@@ -1,31 +1,50 @@
 define([
 	'lodash',
-	'./HellaObjectImpl',
+	'./ClassConstructor',
+	'./HellaObjectConstructor',
 	'./DefinableType'
-], function (_, HellaObjectImpl, DefinableType) {
+], function (_, ClassConstructor, HellaObjectConstructor, DefinableType) {
 	'use strict';
 
+	_.extend(ClassConstructor.prototype, DefinableType, {
 
-	function HellaClass(name, superclass, prototype, definition) {
-		prototype.__class__ = this;
+		initialize: function (name, superclass, constructor, prototype, definition) {
+			prototype.__class__ = this;
 
-		superclass && superclass.__children__.push(this);
+			if (superclass) {
+				superclass.__children__.push(this);
+			}
 
-		this.__superclass__ = superclass;
-		this.__children__ = [ ];
-		this.__modules__ = [ ];
-		this.__members__ = { };
+			this.__superclass__ = superclass;
+			this.__children__ = [ ];
+			this.__modules__ = [ ];
+			this.__members__ = { };
 
-		this.__prototype__ = prototype;
-
-		this.displayName = name;
-
-		this.__define__(definition);
-		this.__resolve__();
-	}
+			this.__constructor__ = constructor;
+			this.__prototype__ = prototype;
 
 
-	HellaClass.prototype = _.extend(HellaObjectImpl.create(DefinableType), {
+			this.displayName = name;
+
+			this.__define__(definition);
+			this.__resolve__();
+
+			return this;
+		},
+
+
+		/**
+		 * Create a new instance of this Class.
+		 * @return {*}
+		 */
+		create: function () {
+			var instance = this.__constructor__.createWithPrototype(this.__prototype__);
+
+			instance.initialize.apply(instance, arguments);
+
+			return instance;
+		},
+
 
 		__resolve__: function () {
 			this.__clearCaches__();
@@ -109,11 +128,10 @@ define([
 		var stackIndex = methods.length - 1;
 
 		return function __super__() {
+			var i = arguments.length;
 			var returnValue;
 
 			if (stackIndex > 0) {
-				var i = arguments.length;
-
 				while (i--) {
 					args[i] = arguments[i];
 				}
@@ -130,6 +148,6 @@ define([
 	}
 
 
-	return HellaClass;
+	return ClassConstructor;
 
 });

@@ -1,9 +1,9 @@
 define([
 	'lodash',
-	'./internal/HellaObjectImpl',
+	'./internal/HellaObjectConstructor',
 	'./internal/ClassImpl',
 	'./HellaObject'
-], function (_, HellaObjectImpl, ClassImpl, HellaObject) {
+], function (_, HellaObjectConstructor, ClassImpl, HellaObject) {
 	'use strict';
 
 	/**
@@ -13,20 +13,7 @@ define([
 	 *
 	 * Handles class creation.
 	 */
-	return new ClassImpl('hella.Class', HellaObject, ClassImpl.prototype, {
-
-		/**
-		 * Create a new instance of this Class.
-		 * @return {*}
-		 */
-		create: function () {
-			var instance = HellaObjectImpl.create(this.__prototype__);
-
-			instance.initialize && instance.initialize.apply(instance, arguments);
-
-			return instance;
-		},
-
+	return (new ClassImpl()).initialize('hella.Class', HellaObject, ClassImpl, ClassImpl.prototype, {
 
 		getSuperclass: function () {
 			return this.__superclass__;
@@ -53,6 +40,7 @@ define([
 		statics: {
 
 			create: function (name, superclass, definition) {
+				var constructor;
 				var prototype;
 
 				if (typeof name !== 'string') {
@@ -62,15 +50,17 @@ define([
 				}
 
 				if (superclass instanceof ClassImpl) {
-					prototype = HellaObjectImpl.create(superclass.__prototype__);
+					constructor = superclass.__constructor__;
+					prototype = constructor.createWithPrototype(superclass.__prototype__);
 				}
 				else {
 					definition = superclass;
 					superclass = HellaObject;
-					prototype = new HellaObjectImpl();
+					constructor = HellaObjectConstructor;
+					prototype = new HellaObjectConstructor();
 				}
 
-				return new ClassImpl(name, superclass, prototype, definition);
+				return ClassImpl.prototype.create.call(this, name, superclass, constructor, prototype, definition);
 			}
 
 		}

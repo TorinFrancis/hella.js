@@ -3,26 +3,20 @@ define([
 	'lodash',
 	'hella/HellaObject',
 	'hella/Class',
-	'hella/Module'
-], function (chai, _, HellaObject, Class, Module) {
+	'hella/Module',
+	'spec/hella/shared/DefinableTypeSpec'
+], function (chai, _, HellaObject, Class, Module, DefinableTypeSpec) {
 
 	var expect = chai.expect;
 
 
 	describe('Class', function () {
 
-		it('is a Class', function () {
-			expect(Class.instanceOf(Class)).to.be.true;
-		});
+		DefinableTypeSpec(Class);
 
 
 		it('is it\'s own Class', function () {
 			expect(Class.getClass()).to.equal(Class);
-		});
-
-
-		it('has HellaObject as its parent Class', function () {
-			expect(Class.getClass().getSuperclass()).to.equal(HellaObject);
 		});
 
 
@@ -102,83 +96,6 @@ define([
 				it('calls the initialize method with any given arguments on the created instance', function () {
 					expect(kermit.name).to.equal('kermit');
 					expect(kermit.type).to.equal('frog');
-				});
-			});
-		});
-
-
-		describe('.getTypes()', function () {
-			var MyClass, MyChildClass, MyModule, MyOtherModule, MyIncludingModule, MyOtherIncludingModule;
-
-			beforeEach(function () {
-				MyClass = Class.create('MyClass');
-				MyChildClass = Class.create('MyChildClass', MyClass);
-				MyModule = Module.create('MyModule');
-				MyOtherModule = Module.create('MyOtherModule');
-				MyIncludingModule = Module.create('MyIncludingModule', { includes: MyModule });
-				MyOtherIncludingModule = Module.create('MyOtherIncludingModule', { includes: MyModule });
-			});
-
-
-			describe('with no superclass or modules', function () {
-				it('returns the HellaObject Class and the Class it was called on', function () {
-					expect(MyClass.getTypes()).to.eql([HellaObject, MyClass]);
-				});
-			});
-
-
-			describe('with a superclass', function () {
-				it('returns the HellaObject Class, the superclass, and the Class it was called on', function () {
-					expect(MyChildClass.getTypes()).to.eql([HellaObject, MyClass, MyChildClass]);
-				});
-			});
-
-
-			describe('with an included module', function () {
-				beforeEach(function () {
-					MyClass.include(MyModule);
-				});
-
-				it('returns the HellaObject Class, the included Module, and the Class it was called on', function () {
-					expect(MyClass.getTypes()).to.eql([HellaObject, MyModule, MyClass]);
-					expect(MyChildClass.getTypes()).to.eql([HellaObject, MyModule, MyClass, MyChildClass]);
-				});
-			});
-
-
-			describe('with two included Modules', function () {
-				beforeEach(function () {
-					MyClass.include([MyModule, MyOtherModule]);
-				});
-
-				it('sorts the modules by inclusion order', function () {
-					expect(MyClass.getTypes()).to.eql([HellaObject, MyModule, MyOtherModule, MyClass]);
-					expect(MyChildClass.getTypes()).to.eql([HellaObject, MyModule, MyOtherModule, MyClass, MyChildClass]);
-				});
-			});
-
-
-			describe('with a tree of included modules', function () {
-				beforeEach(function () {
-					MyClass.include(MyIncludingModule);
-				});
-
-
-				it('returns the flattened tree', function () {
-					expect(MyClass.getTypes()).to.eql([HellaObject, MyModule, MyIncludingModule, MyClass]);
-					expect(MyChildClass.getTypes()).to.eql([HellaObject, MyModule, MyIncludingModule, MyClass, MyChildClass]);
-				});
-
-
-				describe('with a repeated reference in the tree', function () {
-					beforeEach(function () {
-						MyClass.include(MyOtherIncludingModule);
-					});
-
-					it('places the repeated module at its earliest possible position', function () {
-						expect(MyClass.getTypes()).to.eql([HellaObject, MyModule, MyIncludingModule, MyOtherIncludingModule, MyClass]);
-						expect(MyChildClass.getTypes()).to.eql([HellaObject, MyModule, MyIncludingModule, MyOtherIncludingModule, MyClass, MyChildClass]);
-					});
 				});
 			});
 		});
